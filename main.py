@@ -26,7 +26,10 @@ random_number = generate_random_number()
 
 @app.route('/')
 def home():
-    db['best_record'] = session.get('best_record', 0)
+    if session['best_record']:
+        db['best_record'] = session.get('best_record', 0)
+    else:
+        session['best_record'] = 100
     return render_template('home.html', best_record=db['best_record'])
 
 
@@ -52,8 +55,8 @@ def check():
         if db['user_number'] != random_number:
             db['best_record'] += 1
 
-        elif db['user_number'] == random_number and db['best_record'] < session['best_record']:
-            session['best_record'] = db['best_record']
+        elif db['user_number'] == random_number and db['total_num_of_guesses'] < session['best_record']:
+            session['best_record'] = db['total_num_of_guesses']
 
     return render_template('home.html', guesses=reversed(db['guesses']), user_number=db['user_number'],
                            random_number=random_number, total_num_of_guesses=db['total_num_of_guesses'],
